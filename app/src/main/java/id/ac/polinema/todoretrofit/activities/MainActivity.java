@@ -1,19 +1,17 @@
 package id.ac.polinema.todoretrofit.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -25,15 +23,12 @@ import id.ac.polinema.todoretrofit.adapters.TodoAdapter;
 import id.ac.polinema.todoretrofit.generator.ServiceGenerator;
 import id.ac.polinema.todoretrofit.models.Envelope;
 import id.ac.polinema.todoretrofit.models.Todo;
-import id.ac.polinema.todoretrofit.models.User;
-import id.ac.polinema.todoretrofit.services.AuthService;
 import id.ac.polinema.todoretrofit.services.TodoService;
-import id.ac.polinema.todoretrofit.services.UserService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTodoClickedListener {
+public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTodoClickedListener, TodoAdapter.OnTodoClickedDeletedListener {
 
     private RecyclerView todosRecyclerView;
     private Session session;
@@ -66,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
         todosRecyclerView = findViewById(R.id.rv_todos);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         todosRecyclerView.setLayoutManager(layoutManager);
-        adapter = new TodoAdapter(this, this);
+        adapter = new TodoAdapter(this, this, this);
         todosRecyclerView.setAdapter(adapter);
         service = ServiceGenerator.createService(TodoService.class);
         loadTodos();
@@ -108,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
         //noinspection SimplifiableIfStatement
         switch(id){
             case R.id.action_settings:
+
                 return true;
             case R.id.action_logout:
                 session.removeSession();
@@ -120,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
         }
 
 
+
     }
 
     @Override
@@ -129,6 +126,10 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
         intent.putExtra(Constant.KEY_REQUEST_CODE, Constant.UPDATE_TODO);
         startActivityForResult(intent, Constant.UPDATE_TODO);
     }
+    @Override
+    public void onClickDeleted (Todo todo){
+        deleteTodo(todo);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -136,5 +137,27 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
         if (resultCode == RESULT_OK) {
             loadTodos();
         }
+    }
+
+    public void deleteTodo(Todo todo){
+        int id =todo.getId();
+        Call<Envelope<Todo>> deleteTodo = service.deleteTodo(id);
+        deleteTodo.enqueue(new Callback<Envelope<Todo>>() {
+            @Override
+            public void onResponse(Call<Envelope<Todo>> call, Response<Envelope<Todo>> response) {
+                if (response.code() == 200) {
+                    loadTodos();
+                }else{
+                    Toast.makeText(MainActivity.this,response.toString(),Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Envelope<Todo>> call, Throwable t) {
+
+            }
+        });
+
     }
 }
