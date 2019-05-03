@@ -21,12 +21,16 @@ public interface TodoService {
 	@POST("/v1/todos")
 	Call<Envelope<Todo>> addTodo(@Body Todo todo);
 
-
 	@PUT("/v1/todos/{id}")
 	Call<Envelope<Todo>> updateTodo(@Path("id") String id,@Body Todo todo);
 
 	@DELETE("/v1/todos/{id}")
 	Call<Envelope<Todo>> deleteTodo(@Path("id") int id);
 
+	@POST("/v1/todos/{id}/done")
+	Call<Envelope<Todo>> setDone(@Path("id") int id);
 
+	@POST("/v1/todos/{id}/undone")
+	Call<Envelope<Todo>> setUndone(@Path("id") int id);
 }
+

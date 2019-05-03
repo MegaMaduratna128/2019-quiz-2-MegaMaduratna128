@@ -1,13 +1,16 @@
 package id.ac.polinema.todoretrofit.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +26,10 @@ import id.ac.polinema.todoretrofit.adapters.TodoAdapter;
 import id.ac.polinema.todoretrofit.generator.ServiceGenerator;
 import id.ac.polinema.todoretrofit.models.Envelope;
 import id.ac.polinema.todoretrofit.models.Todo;
+import id.ac.polinema.todoretrofit.models.User;
+import id.ac.polinema.todoretrofit.services.AuthService;
 import id.ac.polinema.todoretrofit.services.TodoService;
+import id.ac.polinema.todoretrofit.services.UserService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -102,9 +108,6 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
 
         //noinspection SimplifiableIfStatement
         switch(id){
-            case R.id.action_settings:
-
-                return true;
             case R.id.action_logout:
                 session.removeSession();
                 Intent intent = new Intent(this, LoginActivity.class);
@@ -114,9 +117,6 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
             default:
                 return super.onOptionsItemSelected(item);
         }
-
-
-
     }
 
     @Override
@@ -159,5 +159,30 @@ public class MainActivity extends AppCompatActivity implements TodoAdapter.OnTod
             }
         });
 
+    }
+
+    @Override
+    public void onCheck(Todo todo) {
+        Call<Envelope<Todo>> setDone;
+        if(todo.getDone()){
+            setDone = service.setDone(todo.getId());
+        }else {
+            setDone = service.setUndone(todo.getId());
+        }
+        setDone.enqueue(new Callback<Envelope<Todo>>() {
+            @Override
+            public void onResponse(Call<Envelope<Todo>> call, Response<Envelope<Todo>> response) {
+                if(response.code() == 200){
+                    Envelope<Todo> okResponse = response.body();
+                    Todo data = okResponse.getData();
+                    Toast.makeText(getApplicationContext(), data.getTodo()+ ":" + data.getDone(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Envelope<Todo>> call, Throwable t) {
+
+            }
+        });
     }
 }
