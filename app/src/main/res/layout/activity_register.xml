@@ -25,8 +25,9 @@
 
         <!--  Username Label -->
             <EditText android:id="@+id/input_username"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="13dp"
-                android:layout_width="328dp"
+                android:layout_width="300dp"
                 android:layout_height="40dp"
                 android:inputType="textCapWords"
                 android:hint="Username"
@@ -35,8 +36,9 @@
 
         <!--  Name Label -->
             <EditText android:id="@+id/input_name"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="13dp"
-                android:layout_width="328dp"
+                android:layout_width="300dp"
                 android:layout_height="40dp"
                 android:inputType="textCapWords"
                 android:hint="Name"
@@ -46,7 +48,8 @@
         <!-- Password Label -->
             <EditText android:id="@+id/input_password"
                 android:layout_marginTop="13dp"
-                android:layout_width="328dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="15dp"
                 android:layout_height="40dp"
                 android:inputType="textPassword"
                 android:hint="Password"
@@ -57,13 +60,16 @@
         <!-- Register Button -->
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_register"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:padding="12dp"
             android:text="Create Account"
+            android:background="@color/cardview_shadow_start_color"
             android:onClick="handleRegister"
+            android:textStyle="bold"
             />
 
         <TextView android:id="@+id/link_login"
